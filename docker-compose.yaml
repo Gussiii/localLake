@@ -1,45 +1,92 @@
 services:
-  minio: 
-    image: bitnami/minio
-    container_name: minio
-    ports:
-      - "9000:9000"
-      - "9001:9001"
-    environment:
-      - MINIO_ROOT_USER=admin
-      - MINIO_ROOT_PASSWORD=password      
-      - MINIO_REGION=us-east-1
-    volumes:
-      - './data:/data'
-    # command: minio server /data
+  # minio: 
+  #   image: bitnami/minio
+  #   container_name: minio
+  #   ports:
+  #     - "9000:9000"
+  #     - "9001:9001"
+  #   environment:
+  #     - MINIO_ROOT_USER=admin
+  #     - MINIO_ROOT_PASSWORD=password      
+  #     - MINIO_REGION=us-east-1
+  #   volumes:
+  #     - './data:/data'
+  #   # command: minio server /data
  
-  dremio: 
-    image: dremio/dremio-oss
-    container_name: dremio
-    volumes:
-      - ./dremio:/opt/dremio/data
-    ports:
-      - "31010:31010"
-      - "32010:32010"
-      - "45678:45678"
-      - "9047:9047"
+  # dremio: 
+  #   image: dremio/dremio-oss
+  #   container_name: dremio
+  #   volumes:
+  #     - ./dremio:/opt/dremio/data
+  #   ports:
+  #     - "31010:31010"
+  #     - "32010:32010"
+  #     - "45678:45678"
+  #     - "9047:9047"
+
+  # spark-master:
+  #   image: bitnami/spark:latest
+  #   hostname: spark-master
+  #   environment:
+  #     - INIT_DAEMON_STEP=setup_spark
+  #   ports:
+  #     - "8080:8080"
 
   spark-master:
-    image: bitnami/spark:latest
-    hostname: spark-master
-    environment:
-      - INIT_DAEMON_STEP=setup_spark
-    ports:
-      - "8080:8080"
-    networks:
-      - spark-network
+      build: ./spark
+      ports:
+        - "8080:8080"
+        - "7077:7077"
+      extra_hosts:
+        - "host.docker.internal:host-gateway"  
+      volumes:
+        - ./spark/spark-defaults.conf:/opt/spark/conf/spark-defaults.conf
+        - ./hadoop/core-site.xml:/opt/spark/etc/hadoop/core-site.xml
+      environment:
+        - SPARK_WORKLOAD=master
+  
+  spark-worker-a:
+      build: ./spark
+      ports:
+        - "9091:8080"
+        - "7000:7000"
+      extra_hosts:
+        - "host.docker.internal:host-gateway"        
+      depends_on:
+        - spark-master
+      environment:
+        - SPARK_MASTER=spark://spark-master:7077
+        - SPARK_WORKLOAD=worker
+      volumes:
+        - ./spark/spark-defaults.conf:/opt/spark/conf/spark-defaults.conf
+        - ./hadoop/core-site.xml:/opt/spark/etc/hadoop/core-site.xml
+        - ./worker-a-code:/opt/spark/workdir
 
+  # spark-master:
+  #   build: ./spark
+  #   restart: unless-stopped
+  #   ports:
+  #     - 4040:4040
+  #     - 7077:7077
+  #     - 8080:8080
+  #     - 18080:18080
+  #   command: sh spark-master.sh
+  #   networks:
+  #     - spark-network
+
+  # spark-worker:
+  #   build: ./spark
+  #   restart: unless-stopped
+  #   ports:
+  #     - "8081-8085:8081"
+  #   command: sh spark-worker.sh
+  #   networks:
+  #     - spark-network
+      
   jupyter:
-    build: .
+    build: ./jupyter
     ports:
       - "8888:8888"
-    networks:
-      - spark-network
     volumes:
       - ./data:/home/jovyan/data
       - ./notebooks:/home/jovyan/
@@ -48,5 +95,4 @@ services:
       - spark-master
     command: "start-notebook.sh --NotebookApp.token='' --NotebookApp.password=''"
 
-networks:
-  spark-network:
+
