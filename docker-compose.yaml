@@ -1,0 +1,52 @@
+services:
+  minio: 
+    image: bitnami/minio
+    container_name: minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      - MINIO_ROOT_USER=admin
+      - MINIO_ROOT_PASSWORD=password      
+      - MINIO_REGION=us-east-1
+    volumes:
+      - './data:/data'
+    # command: minio server /data
+ 
+  dremio: 
+    image: dremio/dremio-oss
+    container_name: dremio
+    volumes:
+      - ./dremio:/opt/dremio/data
+    ports:
+      - "31010:31010"
+      - "32010:32010"
+      - "45678:45678"
+      - "9047:9047"
+
+  spark-master:
+    image: bitnami/spark:latest
+    hostname: spark-master
+    environment:
+      - INIT_DAEMON_STEP=setup_spark
+    ports:
+      - "8080:8080"
+    networks:
+      - spark-network
+
+  jupyter:
+    build: .
+    ports:
+      - "8888:8888"
+    networks:
+      - spark-network
+    volumes:
+      - ./data:/home/jovyan/data
+      - ./notebooks:/home/jovyan/
+
+    depends_on:
+      - spark-master
+    command: "start-notebook.sh --NotebookApp.token='' --NotebookApp.password=''"
+
+networks:
+  spark-network:
