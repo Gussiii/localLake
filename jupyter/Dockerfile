@@ -18,6 +18,8 @@ COPY requirements.txt .
 #     && apt-get update && apt-get install -y openjdk-17-jdk
 
 # RUN pip install  -i https://nexus.bmwgroup.net/repository/pypi/simple -r requirements.txt && rm requirements.txt 
+RUN pip install -r requirements.txt && rm requirements.txt 
+
 
 # # ARG NB_USER=jovyan
 # # ARG NB_UID=1000

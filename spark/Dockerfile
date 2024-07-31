@@ -1,18 +1,18 @@
-FROM python:3.11 as builder
-LABEL python_version=python3.10
+FROM python:3.11-bullseye AS builder
+LABEL python_version=python3.11
 
 USER root
 
-# Add Dependencies for PySpark
-RUN QNUMBER='' \
-    && export QNUMBER \
-    PASSWORD='' \
-    && export PASSWORD \
-    http_proxy=http://${QNUMBER}:${PASSWORD}@207.248.117.132:8080 \
-    && export http_proxy \
-    https_proxy=http://${QNUMBER}:${PASSWORD}@207.248.117.132:8080 \
-    && export https_proxy \
-    && apt-get update \
+# # Add Dependencies for PySpark
+# RUN QNUMBER='' \
+#     && export QNUMBER \
+#     PASSWORD='' \
+#     && export PASSWORD \
+#     http_proxy=http://${QNUMBER}:${PASSWORD}@207.248.117.132:8080 \
+#     && export http_proxy \
+#     https_proxy=http://${QNUMBER}:${PASSWORD}@207.248.117.132:8080 \
+#     && export https_proxy \
+RUN apt-get update \
     && apt-get install -y curl vim wget software-properties-common ssh net-tools ca-certificates rsync
 
 # Spark dependencies
@@ -20,19 +20,22 @@ RUN QNUMBER='' \
 # (ARGS are in lowercase to distinguish them from ENV)
 ARG openjdk_version="17"
 
-RUN QNUMBER='' \
-    && export QNUMBER \
-    PASSWORD='' \
-    && export PASSWORD \
-    http_proxy=http://${QNUMBER}:${PASSWORD}@207.248.117.132:8080 \
-    && export http_proxy \
-    https_proxy=http://${QNUMBER}:${PASSWORD}@207.248.117.132:8080 \
-    && export https_proxy \
-    && apt-get update --yes && \
+# RUN QNUMBER='' \
+#     && export QNUMBER \
+#     PASSWORD='' \
+#     && export PASSWORD \
+#     http_proxy=http://${QNUMBER}:${PASSWORD}@207.248.117.132:8080 \
+#     && export http_proxy \
+#     https_proxy=http://${QNUMBER}:${PASSWORD}@207.248.117.132:8080 \
+#     && export https_proxy \
+RUN apt-get update --yes && \
     apt-get install --yes --no-install-recommends \
-    "openjdk-${openjdk_version}-jre-headless" \
+    openjdk-${openjdk_version}-jre-headless \
     ca-certificates-java && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
+
+
+RUN echo ls
 
 # Fix the value of PYTHONHASHSEED
 # Note: this is needed when you use Python 3.3 or greater
@@ -41,36 +44,37 @@ HADOOP_VERSION=hadoop-3.4.0 \
 SPARK_HOME=/opt/spark \
 PYTHONHASHSEED=1
 
-RUN QNUMBER='' \
-    && export QNUMBER \
-    PASSWORD='' \
-    && export PASSWORD \
-    http_proxy=http://${QNUMBER}:${PASSWORD}@207.248.117.132:8080 \
-    && export http_proxy \
-    https_proxy=http://${QNUMBER}:${PASSWORD}@207.248.117.132:8080 \
-    && export https_proxy \
-    && wget --no-verbose -O apache-spark.tgz "https://archive.apache.org/dist/spark/${SPARK_VERSION}/${SPARK_VERSION}-bin-without-hadoop.tgz" \
+# RUN QNUMBER='' \
+#     && export QNUMBER \
+#     PASSWORD='' \
+#     && export PASSWORD \
+#     http_proxy=http://${QNUMBER}:${PASSWORD}@207.248.117.132:8080 \
+#     && export http_proxy \
+#     https_proxy=http://${QNUMBER}:${PASSWORD}@207.248.117.132:8080 \
+#     && export https_proxy \
+RUN wget --no-verbose -O apache-spark.tgz "https://archive.apache.org/dist/spark/${SPARK_VERSION}/${SPARK_VERSION}-bin-without-hadoop.tgz" \
     && mkdir -p /opt/spark \
     && tar -xf apache-spark.tgz -C /opt/spark --strip-components=1 \
     && rm apache-spark.tgz
 
 
-RUN QNUMBER='' \
-    && export QNUMBER \
-    PASSWORD='' \
-    && export PASSWORD \
-    http_proxy=http://${QNUMBER}:${PASSWORD}@207.248.117.132:8080 \
-    && export http_proxy \
-    https_proxy=http://${QNUMBER}:${PASSWORD}@207.248.117.132:8080 \
-    && export https_proxy \
-    && wget --no-verbose -O hadoop.tgz "https://dlcdn.apache.org/hadoop/common/${HADOOP_VERSION}/${HADOOP_VERSION}.tar.gz" \
+# RUN QNUMBER='' \
+#     && export QNUMBER \
+#     PASSWORD='' \
+#     && export PASSWORD \
+#     http_proxy=http://${QNUMBER}:${PASSWORD}@207.248.117.132:8080 \
+#     && export http_proxy \
+#     https_proxy=http://${QNUMBER}:${PASSWORD}@207.248.117.132:8080 \
+#     && export https_proxy \
+RUN wget --no-verbose -O hadoop.tgz "https://dlcdn.apache.org/hadoop/common/${HADOOP_VERSION}/${HADOOP_VERSION}.tar.gz" \
     && mkdir -p /opt/spark \
     && tar -xf hadoop.tgz -C /opt/spark --strip-components=1 \
     && rm hadoop.tgz
 
-ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+# ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-arm64
 
-FROM builder as apache-spark
+FROM builder AS apache-spark
 
 WORKDIR /opt/spark
 

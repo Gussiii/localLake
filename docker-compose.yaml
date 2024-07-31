@@ -1,17 +1,17 @@
 services:
-  # minio: 
-  #   image: bitnami/minio
-  #   container_name: minio
-  #   ports:
-  #     - "9000:9000"
-  #     - "9001:9001"
-  #   environment:
-  #     - MINIO_ROOT_USER=admin
-  #     - MINIO_ROOT_PASSWORD=password      
-  #     - MINIO_REGION=us-east-1
-  #   volumes:
-  #     - './data:/data'
-  #   # command: minio server /data
+  minio: 
+    image: bitnami/minio
+    container_name: minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      - MINIO_ROOT_USER=admin
+      - MINIO_ROOT_PASSWORD=password      
+      - MINIO_REGION=us-east-1
+    volumes:
+      - './data:/data'
+    # command: minio server /data
  
   # dremio: 
   #   image: dremio/dremio-oss
@@ -49,7 +49,7 @@ services:
       build: ./spark
       ports:
         - "9091:8080"
-        - "7000:7000"
+        - "7001:7000"
       extra_hosts:
         - "host.docker.internal:host-gateway"        
       depends_on:
@@ -94,5 +94,3 @@ services:
     depends_on:
       - spark-master
     command: "start-notebook.sh --NotebookApp.token='' --NotebookApp.password=''"
-
-
