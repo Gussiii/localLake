@@ -1,5 +1,5 @@
+pyspark==3.5.0
 delta-spark
 deltalake
 jupyterlab 
 pandas
-pyspark==3.5.0

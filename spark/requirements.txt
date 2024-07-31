@@ -1,3 +1,6 @@
+pyspark==3.5.0
 numpy
 pandas
 requests
+delta-spark
+deltalake
