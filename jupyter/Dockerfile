@@ -17,8 +17,17 @@ COPY requirements.txt .
 #     && export https_proxy \
 #     && apt-get update && apt-get install -y openjdk-17-jdk
 
-# RUN pip install  -i https://nexus.bmwgroup.net/repository/pypi/simple -r requirements.txt && rm requirements.txt 
-RUN pip install -r requirements.txt && rm requirements.txt 
+RUN pip install  -i https://nexus.bmwgroup.net/repository/pypi/simple -r requirements.txt && rm requirements.txt 
+# RUN pip install -r requirements.txt && rm requirements.txt 
+
+# COPY dependencies/ /opt/spark/jars/
+
+
+# COPY dependencies/aws-java-sdk-bundle-1.11.1026.jar /home/jovyan/.ivy2/local/com.amazonaws/aws-java-sdk-bundle/1.11.1026/jars/
+# COPY dependencies/aws-java-sdk-bundle-1.11.1026.jar /home/jovyan/.ivy2/local/com.amazonaws/aws-java-sdk-bundle/1.11.1026/jars/
+RUN mkdir /home/jovyan/.ivy2
+
+COPY dependencies/ /usr/local/spark/jars/
 
 
 # # ARG NB_USER=jovyan
