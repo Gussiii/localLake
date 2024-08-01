@@ -1,7 +1,20 @@
 services:
+
+  dremio:
+    image: dremio/dremio-oss
+    container_name: dremio
+    volumes:
+      - ./dremio:/opt/dremio/data
+    ports:
+      - "31010:31010"
+      - "32010:32010"
+      - "45678:45678"
+      - "9047:9047"
+
   minio:
-    image: bitnami/minio
+    image: minio/minio
     container_name: minio
+    command: server --console-address ":9001" /data
     ports:
       - "9000:9000"
       - "9001:9001"
@@ -10,7 +23,7 @@ services:
       - MINIO_ROOT_PASSWORD=password
       - MINIO_REGION=us-east-1
     volumes:
-      - './minio/data:/data'
+      - ./minio/data/:/data/
 
   jupyter:
     # image: almost/base
@@ -18,5 +31,6 @@ services:
     ports:
       - "8888:8888"
     volumes:
-      - ./jupyter/data/:/home/jovyan/data/
-      - ./jupyter/notebooks/:/home/jovyan/
+      - ./jupyter/data/:/home/data/
+      - ./jupyter/notebooks/:/home/
+      - ./ivy2/:/root/.ivy2/cache/
