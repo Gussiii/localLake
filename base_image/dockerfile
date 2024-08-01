@@ -34,9 +34,6 @@ COPY tgz/ /
 RUN tar -xf apache-spark.tgz -C /opt/spark --strip-components=1 \
     && rm apache-spark.tgz
 
-# RUN tar -xf apache-spark.tgz -C /opt/spark --strip-components=1 \
-#     rm apache-spark.tgz
-
 # RUN wget --no-verbose -O apache-spark.tgz "https://archive.apache.org/dist/spark/${SPARK_VERSION}/${SPARK_VERSION}-bin-hadoop3-scala2.13.tgz" \
 #     && tar -xf apache-spark.tgz -C /opt/spark --strip-components=1 \
 #     && rm apache-spark.tgz
