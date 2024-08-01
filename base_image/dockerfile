@@ -67,4 +67,6 @@ RUN mkdir -p $SPARK_LOG_DIR && \
     ln -sf /dev/stdout $SPARK_MASTER_LOG && \
     ln -sf /dev/stdout $SPARK_WORKER_LOG
 
+
+RUN touch /opt/spark/conf/hadoop-metrics2-s3a-file-system.properties
 COPY dependencies/ /opt/spark/jars/

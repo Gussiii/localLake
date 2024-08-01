@@ -27,10 +27,47 @@ services:
 
   jupyter:
     # image: almost/base
+    container_name: jupyter
     build: ./jupyter
     ports:
       - "8888:8888"
     volumes:
       - ./jupyter/data/:/home/data/
       - ./jupyter/notebooks/:/home/
+      - ./ivy2/:/root/.ivy2/cache/
+  
+  spark-master:
+    build: ./spark
+    container_name: master
+    ports:
+      - "8080:8080"
+      - "7077:7077"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ./spark/spark-defaults.conf:/opt/spark/conf/spark-defaults.conf
+      - ./hadoop/core-site.xml:/opt/spark/etc/hadoop/core-site.xml
+      - ./data:/home/jovyan/data
+      - ./ivy2/:/root/.ivy2/cache/
+    environment:
+      - SPARK_WORKLOAD=master
+
+  spark-worker-a:
+    build: ./spark
+    container_name: worker_a
+    ports:
+      - "9091:8080"
+      - "7001:7000"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      - spark-master
+    environment:
+      - SPARK_MASTER=spark://spark-master:7077
+      - SPARK_WORKLOAD=worker
+    volumes:
+      - ./spark/spark-defaults.conf:/opt/spark/conf/spark-defaults.conf
+      - ./hadoop/core-site.xml:/opt/spark/etc/hadoop/core-site.xml
+      - ./worker-a-code:/opt/spark/workdir
+      - ./data:/home/jovyan/data
       - ./ivy2/:/root/.ivy2/cache/

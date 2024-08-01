@@ -1,0 +1,7 @@
+FROM almost/base
+
+WORKDIR /home/
+
+COPY start.sh /
+
+CMD ["/bin/bash", "/start.sh"]
