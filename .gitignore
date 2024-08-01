@@ -10,7 +10,7 @@ dremio/
 dependencies/
 
 *.tgz
-
+*.jar
 # Distribution / packaging
 .Python
 build/

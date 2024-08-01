@@ -6,5 +6,6 @@ services:
     ports:
       - "8888:8888"
     volumes:
-      - .jupyter/data:/home/jovyan/data
-      - .jupyter/notebooks:/home/jovyan/
+      - ./jupyter/data/:/home/jovyan/data/
+      - ./jupyter/notebooks/:/home/jovyan/
+      - ../base_image/ivy2/:/root/.ivy2/
