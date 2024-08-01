@@ -1,68 +1,10 @@
 services:
-  minio:
-    image: bitnami/minio
-    container_name: minio
-    ports:
-      - "9000:9000"
-      - "9001:9001"
-    environment:
-      - MINIO_ROOT_USER=admin
-      - MINIO_ROOT_PASSWORD=password
-      - MINIO_REGION=us-east-1
-    volumes:
-      - './data:/data'
-
-  # dremio:
-  #   image: dremio/dremio-oss
-  #   container_name: dremio
-  #   volumes:
-  #     - ./dremio:/opt/dremio/data
-  #   ports:
-  #     - "31010:31010"
-  #     - "32010:32010"
-  #     - "45678:45678"
-  #     - "9047:9047"
-
-  spark-master:
-    build: ./spark
-    ports:
-      - "8080:8080"
-      - "7077:7077"
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-    volumes:
-      - ./spark/spark-defaults.conf:/opt/spark/conf/spark-defaults.conf
-      - ./hadoop/core-site.xml:/opt/spark/etc/hadoop/core-site.xml
-      - ./data:/home/jovyan/data
-    environment:
-      - SPARK_WORKLOAD=master
-
-  spark-worker-a:
-    build: ./spark
-    ports:
-      - "9091:8080"
-      - "7001:7000"
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-    depends_on:
-      - spark-master
-    environment:
-      - SPARK_MASTER=spark://spark-master:7077
-      - SPARK_WORKLOAD=worker
-    volumes:
-      - ./spark/spark-defaults.conf:/opt/spark/conf/spark-defaults.conf
-      - ./hadoop/core-site.xml:/opt/spark/etc/hadoop/core-site.xml
-      - ./worker-a-code:/opt/spark/workdir
-      - ./data:/home/jovyan/data
 
   jupyter:
+    # image: almost/base
     build: ./jupyter
     ports:
       - "8888:8888"
     volumes:
-      - ./data:/home/jovyan/data
-      - ./notebooks:/home/jovyan/
-
-    depends_on:
-      - spark-master
-    command: "start-notebook.sh --NotebookApp.token='' --NotebookApp.password=''"
+      - .jupyter/data:/home/jovyan/data
+      - .jupyter/notebooks:/home/jovyan/

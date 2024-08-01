@@ -1,12 +1,10 @@
-FROM jupyter/pyspark-notebook
+FROM almost/base
 
-USER root
+WORKDIR /home/
 
-COPY requirements.txt .
+COPY start.sh /
 
-RUN pip install  -i https://nexus.bmwgroup.net/repository/pypi/simple -r requirements.txt && rm requirements.txt 
-# RUN pip install -r requirements.txt && rm requirements.txt 
+EXPOSE 8888
 
-RUN touch /usr/local/spark/conf/hadoop-metrics2-s3a-file-system.properties
-
-COPY dependencies/ /usr/local/spark/jars/
+# CMD ["/bin/bash", "/start.sh"]
+CMD ["jupyter", "notebook", "--ip=0.0.0.0", "--port=8888", "--no-browser", "--allow-root"]

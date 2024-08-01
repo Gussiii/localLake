@@ -9,6 +9,8 @@ data/
 dremio/
 dependencies/
 
+*.tgz
+
 # Distribution / packaging
 .Python
 build/
