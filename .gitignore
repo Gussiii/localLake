@@ -9,6 +9,9 @@ data/
 dremio/
 dependencies/
 
+ivy2/
+
+
 *.tgz
 *.jar
 # Distribution / packaging

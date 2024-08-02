@@ -26,13 +26,11 @@ services:
       - ./minio/data/:/data/
 
   jupyter:
-    # image: almost/base
     container_name: jupyter
     build: ./jupyter
     ports:
       - "8888:8888"
     volumes:
-      - ./jupyter/data/:/home/data/
       - ./jupyter/notebooks/:/home/
       - ./ivy2/:/root/.ivy2/cache/
   
@@ -47,7 +45,6 @@ services:
     volumes:
       - ./spark/spark-defaults.conf:/opt/spark/conf/spark-defaults.conf
       - ./hadoop/core-site.xml:/opt/spark/etc/hadoop/core-site.xml
-      - ./data:/home/jovyan/data
       - ./ivy2/:/root/.ivy2/cache/
     environment:
       - SPARK_WORKLOAD=master
@@ -69,5 +66,4 @@ services:
       - ./spark/spark-defaults.conf:/opt/spark/conf/spark-defaults.conf
       - ./hadoop/core-site.xml:/opt/spark/etc/hadoop/core-site.xml
       - ./worker-a-code:/opt/spark/workdir
-      - ./data:/home/jovyan/data
       - ./ivy2/:/root/.ivy2/cache/
