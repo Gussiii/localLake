@@ -67,3 +67,15 @@ services:
       - ./hadoop/core-site.xml:/opt/spark/etc/hadoop/core-site.xml
       - ./worker-a-code:/opt/spark/workdir
       - ./ivy2/:/root/.ivy2/cache/
+
+  mongo: 
+      image: mongo
+      container_name: mongo
+      restart: always
+      ports:
+        - "27017:27017"
+      volumes: 
+        - ./data_mongo/:/data/db
+      environment:
+        - MONGO_INITDB_ROOT_USERNAME=admin
+        - MONGO_INITDB_ROOT_PASSWORD=passw0rd
